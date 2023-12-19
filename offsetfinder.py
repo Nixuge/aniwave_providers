@@ -295,9 +295,9 @@ BAD_REQUEST = ("BAD REQUEST !", 400)
 
 @app.route("/thanksForTheServerRessources")
 def get_video_url():
-    data = request.json
     embed_js_hash = ""
     try:
+        data = request.json
         initial_url: str = data["url"]
         embed_js: str = data["embed.js"]
         embed_js = embed_js.encode('utf-8')
@@ -316,9 +316,9 @@ def get_video_url():
             keys = KeyFinder(deobf).grab_keys()
             JS_CACHE[embed_js_hash] = keys
         return get_url(keys, initial_url)
-    except:
+    except Exception as e:
         if embed_js_hash in JS_CACHE.keys(): JS_CACHE.pop(embed_js_hash)
-        traceback.print_exception()
+        traceback.print_exception(e)
         return BAD_REQUEST
 
 if __name__ == "__main__":
