@@ -8,8 +8,8 @@ Restart=always
 RestartSec=5
 Type=simple
 User=nix
-WorkingDirectory=/home/nix/webserver/aniwave_providers
-ExecStart=/home/nix/webserver/aniwave_providers/offsetfinder.py
+WorkingDirectory=/home/nix/webservers/aniwave_providers
+ExecStart=/home/nix/webservers/aniwave_providers/offsetfinder.py
 TimeoutStopSec=30
 
 [Install]
