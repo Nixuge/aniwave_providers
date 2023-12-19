@@ -300,7 +300,7 @@ def get_video_url():
         data = request.json
         initial_url = data.get("url")
         if not initial_url: # idk if mochi can send posts w a json body now, so using this for now
-            data = data["data"]
+            data = json.loads(data["data"])
             initial_url = data["url"]
         embed_js: str = data["embed.js"]
         embed_js = embed_js.encode('utf-8')
