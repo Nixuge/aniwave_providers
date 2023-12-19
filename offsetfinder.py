@@ -318,9 +318,13 @@ def get_video_url():
         return BAD_REQUEST
 
 if __name__ == "__main__":
+    env = None
+    try: 
+        with open("env.json") as file: env = json.load(file.read())
+    except: pass
     http_server = WSGIServer(('', 11481), app)
     file = open(f"logs/{strftime('%Y_%m_%d_%Hh%M')}_deobf_out.txt", "w")
-    deobf_process = subprocess.Popen(["bun", "src/bruh.ts"], stdout=file, cwd="obfuscator-io-deobfuscator")
+    deobf_process = subprocess.Popen(["bun", "src/bruh.ts"], stdout=file, cwd="obfuscator-io-deobfuscator", env=env)
     err = ""
     try:
         http_server.serve_forever()
