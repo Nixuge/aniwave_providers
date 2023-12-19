@@ -3,6 +3,7 @@ import hashlib
 import json
 import re
 import time
+from urllib.parse import urlparse
 from gevent.pywsgi import WSGIServer
 import subprocess
 from time import strftime
@@ -252,7 +253,7 @@ def custom_base64_encode(input_string):
     return result
 
 # futoken
-def futoken(v, location):
+def futoken(v, location, domain):
     # apparently "k" changes sometimes, but it doesn't really matter?
     # if possible, should still grab it.
     k = 'ViFRsqNPsIHKpYB0WLBjGjDGLa4flllPaeQmJ2GWwnXjR6wupwiKOdg92mKTSXrGkg=='
@@ -262,7 +263,7 @@ def futoken(v, location):
         a.append(ord(k[i % len(k)]) + ord(v[i]))
 
 
-    return 'https://mcloud.bz/mediainfo/' + ','.join(map(str, a)) + location  # Assuming location is defined somewhere
+    return f'https://{domain}/mediainfo/' + ','.join(map(str, a)) + location  # Assuming location is defined somewhere
     # response = requests.get('mediainfo/' + ','.join(map(str, a)) + location)
     
     # return response.json()
@@ -277,8 +278,9 @@ def get_url(keys: tuple[str, str], full_url: str):
     second_pass_encoded = custom_base64_encode(second_pass)
     # print(second_pass_encoded)
     url_end = "?" + full_url.split("?")[-1]
+    domain = urlparse(full_url).netloc
     # return futoken(second_pass_encoded, "?t=4xjQC%2F0mBlMLxA%3D%3D&autostart=true")
-    return futoken(second_pass_encoded, url_end)
+    return futoken(second_pass_encoded, url_end, domain)
 
 # ========= WEBSERVER PART =========
 
@@ -305,7 +307,7 @@ def get_video_url():
             time.sleep(1)
         if not keys:
             JS_CACHE[embed_js_hash] = "PENDING"
-            deobf = requests.post("http://localhost:48777", data=embed_js).text
+            deobf = requests.post("http://127.0.0.1:48777", data=embed_js).text
             if deobf == "Invalid input.": 
                 return BAD_REQUEST
             keys = KeyFinder(deobf).grab_keys()
