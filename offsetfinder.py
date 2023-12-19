@@ -293,7 +293,7 @@ app = Flask(__name__)
 JS_CACHE: dict[str, tuple[str, str]] = {}
 BAD_REQUEST = ("BAD REQUEST !", 400)
 
-@app.route("/thanksForTheServerRessources")
+@app.route("/thanksForTheServerRessources", methods=["POST"])
 def get_video_url():
     embed_js_hash = ""
     try:
