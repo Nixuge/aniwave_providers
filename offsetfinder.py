@@ -4,6 +4,7 @@ import hashlib
 import json
 import re
 import time
+import traceback
 from urllib.parse import urlparse
 from gevent.pywsgi import WSGIServer
 import subprocess
@@ -16,36 +17,36 @@ false = False
 true = True
 
 MATCH_KEYS_OBFUSCATED = """loading\(\);
-            var _0x[a-z0-9]{6} = _0x[a-z0-9]{6}\((.*?), this\.[a-zA-Z]\);
-            _0x[a-z0-9]{6} = _0x[a-z0-9]{6}\((.*?), """
+            var _0x[a-z0-9]{4,6} = _0x[a-z0-9]{4,6}\((.*?), this\.[a-zA-Z]\);
+            _0x[a-z0-9]{4,6} = _0x[a-z0-9]{4,6}\((.*?), """
 
-MATCH_OFFSET_FINDER = """  function %DATA1%\(_0x[a-z0-9]{6}, _0x[a-z0-9]{6}\) {
-    var _0x[a-z0-9]{6} = (_0x[a-z0-9]{6})\(\);
-    _0x[a-z0-9]{6} = function \(_0x[a-z0-9]{6}, _0x[a-z0-9]{6}\) {
-      _0x[a-z0-9]{6} = _0x[a-z0-9]{6} - ([0-9]*);
-      var _0x[a-z0-9]{6} = _0x[a-z0-9]{6}\[_0x[a-z0-9]{6}\];
-      return _0x[a-z0-9]{6};
+MATCH_OFFSET_FINDER = """  function %DATA1%\(_0x[a-z0-9]{4,6}, _0x[a-z0-9]{4,6}\) {
+    var _0x[a-z0-9]{4,6} = (_0x[a-z0-9]{4,6})\(\);
+    _0x[a-z0-9]{4,6} = function \(_0x[a-z0-9]{4,6}, _0x[a-z0-9]{4,6}\) {
+      _0x[a-z0-9]{4,6} = _0x[a-z0-9]{4,6} - ([0-9]*);
+      var _0x[a-z0-9]{4,6} = _0x[a-z0-9]{4,6}\[_0x[a-z0-9]{4,6}\];
+      return _0x[a-z0-9]{4,6};
     }"""
 
-MATCH_KEYPART_OFFSET_FIRST = """  var %DATA1% = (_0x[a-z0-9]{6})\(([0-9]*)\);"""
-MATCH_KEYPART_OFFSET = """  var %DATA1% = _0x[a-z0-9]{6}\(([0-9]*)\);"""
+MATCH_KEYPART_OFFSET_FIRST = """  var %DATA1% = (_0x[a-z0-9]{4,6})\(([0-9]*)\);"""
+MATCH_KEYPART_OFFSET = """  var %DATA1% = _0x[a-z0-9]{4,6}\(([0-9]*)\);"""
 
 MATCH_DATA_ARRAY = """  function %DATA1%\(\) {
-    var _0x[a-z0-9]{6} = (.*?);"""
+    var _0x[a-z0-9]{4,6} = (.*?);"""
 
 MATCH_ARRAY_SHIFTER = """while \(true\) {
       try {
-        var _0x[a-z0-9]{6} = (.*?);
-        if \(_0x[a-z0-9]{6} === _0x[a-z0-9]{6}\) {
+        var _0x[a-z0-9]{4,6} = (.*?);
+        if \(_0x[a-z0-9]{4,6} === _0x[a-z0-9]{4,6}\) {
           break;
         } else {
-          _0x[a-z0-9]{6}\.push\(_0x[a-z0-9]{6}\.shift\(\)\);
+          _0x[a-z0-9]{4,6}\.push\(_0x[a-z0-9]{4,6}\.shift\(\)\);
         }
-      } catch \(_0x[a-z0-9]{6}\) {
-        _0x[a-z0-9]{6}\.push\(_0x[a-z0-9]{6}\.shift\(\)\);
+      } catch \(_0x[a-z0-9]{4,6}\) {
+        _0x[a-z0-9]{4,6}\.push\(_0x[a-z0-9]{4,6}\.shift\(\)\);
       }
     }
-  }\)\(_0x[a-z0-9]{6}, ([0-9]*?)\);"""
+  }\)\(_0x[a-z0-9]{4,6}, ([0-9]*?)\);"""
 
 # thanks to https://gist.github.com/lsauer/6088767
 # to reimplement _normalize_array
@@ -145,7 +146,7 @@ class KeyFinder:
         good = shift_funcs[-1]
         func_to_parse = good[0]
         self.shift_target = int(good[1])
-        res = re.sub("parseInt\(_0x[a-z0-9]{6}\(([0-9]*?)\)\)", "parseInt(result_arr[\g<1>-self.global_offset])", func_to_parse)
+        res = re.sub("parseInt\(_0x[a-z0-9]{4,6}\(([0-9]*?)\)\)", "parseInt(result_arr[\g<1>-self.global_offset])", func_to_parse)
         self.free_rce = res
 
     def _shift_data_array(self):
@@ -295,9 +296,10 @@ BAD_REQUEST = ("BAD REQUEST !", 400)
 @app.route("/thanksForTheServerRessources")
 def get_video_url():
     data = request.json
+    embed_js_hash = ""
     try:
-        initial_url = data["url"]
-        embed_js = data["embed.js"]
+        initial_url: str = data["url"]
+        embed_js: str = data["embed.js"]
         embed_js = embed_js.encode('utf-8')
         if len(embed_js) < 100000 or len(embed_js) > 3000000:
             return BAD_REQUEST
@@ -315,6 +317,8 @@ def get_video_url():
             JS_CACHE[embed_js_hash] = keys
         return get_url(keys, initial_url)
     except:
+        if embed_js_hash in JS_CACHE.keys(): JS_CACHE.pop(embed_js_hash)
+        traceback.print_exception()
         return BAD_REQUEST
 
 if __name__ == "__main__":
