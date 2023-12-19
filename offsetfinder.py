@@ -1,3 +1,4 @@
+#!/bin/python3
 from dataclasses import dataclass
 import hashlib
 import json
