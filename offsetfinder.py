@@ -292,7 +292,7 @@ app = Flask(__name__)
 JS_CACHE: dict[str, tuple[str, str]] = {}
 BAD_REQUEST = ("BAD REQUEST !", 400)
 
-@app.route("/get_video_url")
+@app.route("/thanksForTheServerRessources")
 def get_video_url():
     data = request.json
     try:
