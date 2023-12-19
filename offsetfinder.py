@@ -320,7 +320,7 @@ def get_video_url():
 if __name__ == "__main__":
     env = None
     try: 
-        with open("env.json") as file: env = json.load(file.read())
+        with open("env.json") as file: env = json.load(file)
     except: pass
     http_server = WSGIServer(('', 11481), app)
     file = open(f"logs/{strftime('%Y_%m_%d_%Hh%M')}_deobf_out.txt", "w")
