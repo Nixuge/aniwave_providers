@@ -5,7 +5,15 @@ import subprocess
 from time import strftime
 import aniwave.offsetfinder
 import netu.imagefinder
+import utils.delay
 from constants import flask_app
+
+# in utils/delay, we use time.sleep()
+# if just used like this, it'll block the whole thread.
+# However, if we use monkey.patch_time(), it'll replace time.sleep by gevent.sleep
+# from gevent import monkey; 
+# monkey.patch_time()
+# Just ended up using gevent.sleep(), but this is pretty cool tbh
 
 if __name__ == "__main__":
     # load env
