@@ -6,12 +6,12 @@ import re
 import time
 import traceback
 from urllib.parse import urlparse
-from gevent.pywsgi import WSGIServer
-import subprocess
-from time import strftime
+from flask import request
+from constants import flask_app
 
 import requests
 
+from constants import BAD_REQUEST
 
 false = False
 true = True
@@ -286,14 +286,9 @@ def get_url(keys: tuple[str, str], full_url: str):
 
 # ========= WEBSERVER PART =========
 
-
-from flask import Flask, request
-app = Flask(__name__)
-
 JS_CACHE: dict[str, tuple[str, str]] = {}
-BAD_REQUEST = ("BAD REQUEST !", 400)
 
-@app.route("/thanksForTheServerRessources", methods=["POST"])
+@flask_app.route("/thanksForTheServerRessources", methods=["POST"])
 def get_video_url():
     embed_js_hash = ""
     try:
@@ -323,21 +318,3 @@ def get_video_url():
         if embed_js_hash in JS_CACHE.keys(): JS_CACHE.pop(embed_js_hash)
         traceback.print_exception(e)
         return BAD_REQUEST
-
-if __name__ == "__main__":
-    env = None
-    try: 
-        with open("env.json") as file: env = json.load(file)
-    except: pass
-    http_server = WSGIServer(('', 11481), app)
-    file = open(f"logs/{strftime('%Y_%m_%d_%Hh%M')}_deobf_out.txt", "w")
-    deobf_process = subprocess.Popen(["bun", "src/bruh.ts"], stdout=file, cwd="obfuscator-io-deobfuscator", env=env)
-    err = ""
-    try:
-        http_server.serve_forever()
-    except KeyboardInterrupt: err = "KeyboardInterrupt"
-    except Exception as e: err = e
-    print(f"{err} received; stopping.")
-    deobf_process.kill()
-    file.close()
-        

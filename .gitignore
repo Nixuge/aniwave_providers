@@ -1,3 +1,5 @@
 obfuscator-io-deobfuscator/
 logs/
 tester.py
+*.pyc
+env.json
