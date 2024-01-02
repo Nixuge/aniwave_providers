@@ -1,11 +1,7 @@
 import base64
-import json
-import re
 import time
-import bs4
 import cv2
 from flask import request
-import httpx
 import numpy as np
 from cv2.typing import MatLike
 from constants import flask_app
