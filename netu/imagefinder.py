@@ -61,10 +61,10 @@ class Worker:
         done = False
         tries = 0
         adapted_threshold = self.THRESHOLD
-        while not done:
+        while not done and tries < 100: # final check for tries just to be 100% sure this ends.
             try:
                 num = circles[0]
-                if len(num) > 1:
+                if len(num) > 1 and tries < 10: # check for tries here so if in a loop of 0-2-0-2, end on 2 circles and at least try w the first element of the array
                     tries += 1
                     adapted_threshold += 1
                     print(f"New try higher (try {tries} threshold {adapted_threshold})")
@@ -77,7 +77,9 @@ class Worker:
                 adapted_threshold -= 2
                 print(f"New try lower (try {tries} threshold {adapted_threshold})")
                 circles = cv2.HoughCircles(self.canny, cv2.HOUGH_GRADIENT, 1, minDist=self.min_dist, param1=200, param2=adapted_threshold, minRadius=20, maxRadius=40)
-
+        
+        # Crashes if not done after 100 tries
+        circles[0]
 
         return circles
         # try:
