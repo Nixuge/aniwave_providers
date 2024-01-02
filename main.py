@@ -1,3 +1,4 @@
+#!/bin/python3
 import json
 from gevent.pywsgi import WSGIServer
 import subprocess
