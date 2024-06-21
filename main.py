@@ -21,12 +21,14 @@ from constants import flask_app
 # Just ended up using gevent.sleep(), but this is pretty cool tbh
 
 if __name__ == "__main__":
+    print("Loading env")
     # load env
     env = None
     try: 
         with open("env.json") as file: env = json.load(file)
     except: pass
 
+    print("Done loading, starting webserver")
     # set webserver
     http_server = WSGIServer(('', 11481), flask_app)
 
