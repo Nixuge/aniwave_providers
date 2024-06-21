@@ -7,7 +7,6 @@ SyslogIdentifier=aniwaveproviders
 Restart=always
 RestartSec=5
 Type=simple
-User=nix
 WorkingDirectory=/home/nix/webservers/aniwave_providers
 ExecStart=/home/nix/webservers/aniwave_providers/main.py
 TimeoutStopSec=30

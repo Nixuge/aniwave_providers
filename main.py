@@ -1,4 +1,4 @@
-#!/bin/python3
+#!./venv/bin/python
 import json
 from gevent.pywsgi import WSGIServer
 import subprocess
