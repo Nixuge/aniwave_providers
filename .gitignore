@@ -3,4 +3,4 @@ logs/
 tester.py
 *.pyc
 env.json
-venv/
+.venv/

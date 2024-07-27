@@ -5,7 +5,7 @@ import subprocess
 from time import strftime
 # Import back offsetfinder if fixed. For now using a diff service.
 # import aniwave.offsetfinder
-import aniwave.down
+import aniwave.keys
 
 import netu.imagefinder
 
