@@ -2,3 +2,4 @@ gevent
 flask
 opencv-python
 httpx
+requests

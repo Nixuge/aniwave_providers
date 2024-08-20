@@ -21,10 +21,13 @@ def refresh_keys():
     print("Refreshing Aniwave keys")
     attempts = 0
     res = None
-    while res == None and attempts <= 3:
+    while res == None and attempts < 3:
         try:
-            res = httpx.request("POST", "https://anithunder.vercel.app/api/keys").json()
-        except: pass
+            print("Attempting to grab keys.")
+            res = httpx.request("POST", "https://anithunder.vercel.app/api/keys", timeout=20).json()
+        except Exception as e:
+            print("Exception happened while grabbing keys:")
+            print(e)
         attempts += 1
     
     if attempts == 4:
